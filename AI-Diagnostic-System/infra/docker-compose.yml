@@ -1,0 +1,69 @@
+# docker-compose.yml - AI Diagnostic System
+- db_data:/var/lib/postgresql/data
+networks:
+- app-network
+
+
+mlflow:
+image: python:3.10-slim
+container_name: mlflow
+working_dir: /app
+volumes:
+- ./ml:/app/ml
+- mlflow_artifacts:/app/ml/artifacts
+command: bash -lc "pip install --no-cache-dir mlflow[extras] && mlflow server \
+--backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${MLFLOW_DB} \
+--default-artifact-root /app/ml/artifacts \
+--host 0.0.0.0 --port 5000"
+ports:
+- '5000:5000'
+depends_on:
+- postgres
+networks:
+- app-network
+
+
+backend:
+build:
+context: ./backend
+dockerfile: Dockerfile
+container_name: ai_backend
+command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+volumes:
+- ./backend:/app/backend
+- ./ml/models:/app/ml/models
+env_file: ./infra/.env.example
+ports:
+- '8000:8000'
+depends_on:
+- postgres
+- mlflow
+networks:
+- app-network
+
+
+frontend:
+build:
+context: ./frontend
+dockerfile: Dockerfile
+container_name: ai_frontend
+command: npm run dev
+volumes:
+- ./frontend:/app/frontend
+ports:
+- '3000:3000'
+env_file: ./infra/.env.example
+depends_on:
+- backend
+networks:
+- app-network
+
+
+volumes:
+db_data:
+mlflow_artifacts:
+
+
+networks:
+app-network:
+driver: bridge
