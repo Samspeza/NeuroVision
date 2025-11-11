@@ -1,0 +1,44 @@
+###############################################
+# 🧠 DEPENDÊNCIAS — Módulo de Machine Learning
+# Framework base: TensorFlow
+###############################################
+
+
+# Núcleo de aprendizado profundo
+tensorflow==2.17.0
+keras==3.4.1
+
+
+# Processamento de imagem e visão computacional
+opencv-python==4.10.0.84
+scikit-image==0.24.0
+Pillow==10.4.0
+
+
+# Ciência de dados e análise
+numpy==1.26.4
+pandas==2.2.2
+scikit-learn==1.5.2
+matplotlib==3.9.2
+seaborn==0.13.2
+
+
+# Gerenciamento e rastreamento de experimentos
+mlflow==2.15.1
+
+
+# Utilitários gerais e logs
+python-dotenv==1.0.1
+rich==13.8.0
+loguru==0.7.2
+
+
+# Para manipulação de arquivos e diretórios
+pathlib==1.0.1
+
+
+###############################################
+# Dependências opcionais para treinamento avançado
+# (ativar se necessário para aceleração GPU)
+# tensorflow-gpu==2.17.0
+###############################################
