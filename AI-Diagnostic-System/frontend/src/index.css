@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== Estilos Globais ===== */
+html,
+body {
+  @apply bg-gray-50 text-gray-800 font-sans;
+}
+
+button {
+  @apply rounded-lg shadow-sm hover:shadow-md transition;
+}
+
+input,
+textarea {
+  @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary;
+}
+
+/* ===== Tema Personalizado ===== */
+:root {
+  --color-primary: #2563eb; /* Azul */
+  --color-surface: #ffffff;
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.bg-surface {
+  background-color: var(--color-surface);
+}
+
+.shadow-soft {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}

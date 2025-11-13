@@ -1,95 +1,100 @@
 import React, { useEffect, useState } from "react";
-import { fetchAnalyses } from "../services/api";
+import { fetchAnalyses, fetchAnalysisById } from "../services/api";
 
-interface Analise {
+interface Analysis {
   id: number;
-  nomeArquivo: string;
-  resultado: string;
-  probabilidade: number;
-  criadoEm: string;
+  patient_name?: string;
+  diagnosis: string;
+  accuracy: number;
+  created_at: string;
+  image_url?: string;
 }
 
 const History: React.FC = () => {
-  const [analises, setAnalises] = useState<Analise[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [analyses, setAnalyses] = useState<Analysis[]>([]);
+  const [selected, setSelected] = useState<Analysis | null>(null);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const data = await fetchAnalyses();
-        setAnalises(data);
-      } catch (err) {
-        console.error(err);
-        setError("Falha ao carregar histórico de análises.");
-      } finally {
-        setLoading(false);
-      }
+    async function loadData() {
+      const data = await fetchAnalyses();
+      setAnalyses(data);
     }
-    load();
+    loadData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen text-primary">
-        Carregando histórico...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen text-red-500">
-        {error}
-      </div>
-    );
-  }
+  const openDetails = async (id: number) => {
+    const data = await fetchAnalysisById(id);
+    setSelected(data);
+  };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-4xl mx-auto bg-surface shadow-soft rounded-2xl p-6">
-        <h1 className="text-2xl font-bold text-primary mb-4 text-center">
-          Histórico de Análises Iridológicas
-        </h1>
+    <div className="p-6">
+      <h2 className="text-2xl font-semibold mb-6 text-primary">
+        Histórico de Análises
+      </h2>
 
-        {analises.length === 0 ? (
-          <p className="text-center text-gray-600">
-            Nenhuma análise registrada até o momento.
-          </p>
-        ) : (
-          <table className="w-full border-collapse mt-4">
-            <thead>
-              <tr className="bg-gray-100 text-left">
-                <th className="py-2 px-3">ID</th>
-                <th className="py-2 px-3">Arquivo</th>
-                <th className="py-2 px-3">Resultado</th>
-                <th className="py-2 px-3">Probabilidade</th>
-                <th className="py-2 px-3">Data</th>
-              </tr>
-            </thead>
-            <tbody>
-              {analises.map((a) => (
-                <tr
-                  key={a.id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
-                  <td className="py-2 px-3 text-gray-700">{a.id}</td>
-                  <td className="py-2 px-3 text-gray-700">{a.nomeArquivo}</td>
-                  <td className="py-2 px-3 font-semibold text-primary">
-                    {a.resultado}
-                  </td>
-                  <td className="py-2 px-3 text-gray-700">
-                    {(a.probabilidade * 100).toFixed(2)}%
-                  </td>
-                  <td className="py-2 px-3 text-gray-600">
-                    {new Date(a.criadoEm).toLocaleString("pt-BR")}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+      <div className="grid gap-4">
+        {analyses.map((item) => (
+          <div
+            key={item.id}
+            onClick={() => openDetails(item.id)}
+            className="p-4 bg-white shadow-sm rounded-xl hover:shadow-md transition cursor-pointer"
+          >
+            <div className="flex justify-between items-center">
+              <p className="font-medium">
+                {item.patient_name || "Paciente não identificado"}
+              </p>
+              <span className="text-sm text-gray-500">
+                {new Date(item.created_at).toLocaleString()}
+              </span>
+            </div>
+            <p className="text-gray-700 mt-2">
+              Diagnóstico:{" "}
+              <span className="font-semibold text-primary">
+                {item.diagnosis}
+              </span>{" "}
+              — Precisão: {(item.accuracy * 100).toFixed(2)}%
+            </p>
+          </div>
+        ))}
       </div>
+
+      {selected && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 w-[90%] max-w-md shadow-lg relative">
+            <button
+              onClick={() => setSelected(null)}
+              className="absolute top-2 right-3 text-gray-500 hover:text-red-500"
+            >
+              ✕
+            </button>
+
+            <h3 className="text-xl font-semibold text-primary mb-4">
+              Detalhes da Análise
+            </h3>
+
+            {selected.image_url && (
+              <img
+                src={selected.image_url}
+                alt="Íris analisada"
+                className="rounded-xl mb-4"
+              />
+            )}
+
+            <p>
+              <strong>Diagnóstico:</strong> {selected.diagnosis}
+            </p>
+            <p>
+              <strong>Precisão:</strong>{" "}
+              {(selected.accuracy * 100).toFixed(2)}%
+            </p>
+            <p>
+              <strong>Data:</strong>{" "}
+              {new Date(selected.created_at).toLocaleString()}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
