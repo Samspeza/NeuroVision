@@ -76,7 +76,7 @@ http://localhost:5000
 💻 5. Configuração do Frontend React
 bash
 Copiar código
-cd frontend
+cd AI-Diagnostic-System\frontend
 npm install
 npm start
 O frontend será iniciado em:
