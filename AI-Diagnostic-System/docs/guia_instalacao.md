@@ -51,7 +51,7 @@ opencv-python
 flask
 mlflow
 pillow
-⚙️ 4. Configuração da API Node.js
+4. Configuração da API Node.js
 bash
 Copiar código
 cd backend
@@ -73,7 +73,7 @@ A API será iniciada em:
 arduino
 Copiar código
 http://localhost:5000
-💻 5. Configuração do Frontend React
+5. Configuração do Frontend React
 bash
 Copiar código
 cd AI-Diagnostic-System\frontend
@@ -84,7 +84,7 @@ O frontend será iniciado em:
 arduino
 Copiar código
 http://localhost:3000
-🐳 6. Execução via Docker Compose
+6. Execução via Docker Compose
 Para rodar toda a aplicação com um único comando:
 
 bash
