@@ -1,0 +1,12 @@
+{
+  "model_name": "iris_diagnostic_cnn",
+  "version": "1.0.0",
+  "input_shape": [224, 224, 3],
+  "classes": [
+    "normal",
+    "inflamacao",
+    "congestao",
+    "lesao_estrutura"
+  ],
+  "description": "Modelo CNN para diagnóstico iridológico baseado em imagens de íris."
+}
