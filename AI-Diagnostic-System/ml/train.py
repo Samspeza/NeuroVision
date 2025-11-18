@@ -199,7 +199,6 @@ if __name__ == "__main__":
     args = parse_args()
     try:
         result = treinar(args)
-        # Imprimir resumo legível
         print("\\nResumo do treinamento:")
         for k, v in result.items():
             print(f" - {k}: {v}")
