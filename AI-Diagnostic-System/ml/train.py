@@ -24,8 +24,8 @@ from sklearn.metrics import classification_report, confusion_matrix
 import mlflow
 import mlflow.keras
 
-# Configurações / constantes
-ROOT = Path(__file__).resolve().parents[1]  # pasta /ml
+
+ROOT = Path(__file__).resolve().parents[1]  
 PROCESSED_PATH = ROOT / "data" / "processed" / "dataset_prepared.npz"
 MODELS_DIR = ROOT / "models"
 DEFAULT_EPOCHS = 30
@@ -33,7 +33,6 @@ BATCH_SIZE = 32
 IMG_SHAPE = (224, 224, 3)
 RANDOM_SEED = 42
 
-# Garantir reprodutibilidade (até onde possível)
 tf.random.set_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 
