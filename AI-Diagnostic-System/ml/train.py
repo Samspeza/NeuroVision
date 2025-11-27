@@ -61,10 +61,6 @@ def codificar_labels(y_train, y_val, y_test):
 
 
 def construir_modelo(input_shape, num_classes):
-    """
-    Modelo CNN simples. Estrutura modular para facilitar substituição por arquiteturas
-    mais avançadas (ResNet, EfficientNet, etc.).
-    """
     inp = layers.Input(shape=input_shape)
     x = layers.Conv2D(32, (3, 3), activation="relu", padding="same")(inp)
     x = layers.MaxPooling2D((2, 2))(x)
