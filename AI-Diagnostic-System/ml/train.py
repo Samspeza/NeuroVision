@@ -83,15 +83,12 @@ def construir_modelo(input_shape, num_classes):
 
 
 def treinar(args):
-    # Carregar dados
     (X_train, y_train), (X_val, y_val), (X_test, y_test) = carregar_dataset(PROCESSED_PATH)
     y_train_enc, y_val_enc, y_test_enc, num_classes, label_encoder = codificar_labels(y_train, y_val, y_test)
 
-    # Parâmetros
     epochs = args.epochs or DEFAULT_EPOCHS
     batch_size = args.batch_size or BATCH_SIZE
 
-    # Configurar MLflow
     mlflow_tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
     mlflow.set_tracking_uri(mlflow_tracking_uri)
     mlflow.set_experiment(args.experiment_name or "iris_diagnostic_experiment")
@@ -100,18 +97,15 @@ def treinar(args):
     with mlflow.start_run(run_name=run_name) as run:
         run_id = run.info.run_id
 
-        # Log de parâmetros
         mlflow.log_param("epochs", epochs)
         mlflow.log_param("batch_size", batch_size)
         mlflow.log_param("input_shape", IMG_SHAPE)
         mlflow.log_param("num_classes", num_classes)
         mlflow.log_param("model_name", "iris_cnn")
 
-        # Construir modelo
         model = construir_modelo(IMG_SHAPE, num_classes)
         model.summary(print_fn=lambda s: mlflow.log_text(s + "\\n", "model_summary.txt"))
 
-        # Callbacks
         early_stop = callbacks.EarlyStopping(monitor="val_loss", patience=6, restore_best_weights=True)
         reduce_lr = callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=3)
         timestamp = int(time.time())
