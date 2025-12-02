@@ -5,9 +5,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 });
 
-/**
- * Faz o upload de uma imagem de íris e retorna o resultado da predição
- */
+
 export async function uploadIrisImage(file: File) {
   const formData = new FormData();
   formData.append("image", file);
