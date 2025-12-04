@@ -129,17 +129,14 @@ def treinar(args):
             verbose=2,
         )
 
-        # Log de métricas de histórico por época (ex.: accuracy/val_accuracy)
         for key, values in history.history.items():
             for epoch_idx, v in enumerate(values):
                 mlflow.log_metric(f"{key}", v, step=epoch_idx)
 
-        # Avaliação final no conjunto de teste
         test_loss, test_acc = model.evaluate(X_test, y_test_enc, verbose=0)
         mlflow.log_metric("test_loss", float(test_loss))
         mlflow.log_metric("test_accuracy", float(test_acc))
 
-        # Predição e relatório detalhado
         y_pred_probs = model.predict(X_test)
         y_pred = np.argmax(y_pred_probs, axis=1)
         report = classification_report(y_test_enc, y_pred, target_names=label_encoder.classes_, output_dict=True)
