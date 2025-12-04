@@ -146,21 +146,19 @@ def treinar(args):
     with mlflow.start_run(run_name=run_name) as run:
         run_id = run.info.run_id
 
-        # Log de parâmetros
         mlflow.log_param("epochs", epochs)
         mlflow.log_param("batch_size", batch_size)
         mlflow.log_param("input_shape", IMG_SHAPE)
         mlflow.log_param("num_classes", num_classes)
-        mlflow.log_param("model_name", "MobileNetV3Large_TL")
-        mlflow.log_param("learning_rate", LEARNING_RATE)
-        mlflow.log_param("base_model_trainable", False) 
+        mlflow.log_param("model_name", "iris_cnn")
 
-        model = construir_modelo_avancado(IMG_SHAPE, num_classes)
-        model.summary(print_fn=lambda s: mlflow.log_text(s + "\n", "model_summary.txt"))
+        # Construir modelo
+        model = construir_modelo(IMG_SHAPE, num_classes)
+        model.summary(print_fn=lambda s: mlflow.log_text(s + "\\n", "model_summary.txt"))
 
-        early_stop = callbacks.EarlyStopping(monitor="val_loss", patience=10, restore_best_weights=True) 
-        reduce_lr = callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.3, patience=5, min_lr=1e-6) 
-        
+        # Callbacks
+        early_stop = callbacks.EarlyStopping(monitor="val_loss", patience=6, restore_best_weights=True)
+        reduce_lr = callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=3)
         timestamp = int(time.time())
         checkpoint_path = MODELS_DIR / f"iris_model_checkpoint_{timestamp}.h5"
         MODELS_DIR.mkdir(parents=True, exist_ok=True)
@@ -183,7 +181,7 @@ def treinar(args):
         )
         print("Fase 1 de Treinamento concluída (Fine-tuning apenas do Head).")
 
-        # Log de métricas de histórico
+        # Log de métricas de histórico por época (ex.: accuracy/val_accuracy)
         for key, values in history.history.items():
             for epoch_idx, v in enumerate(values):
                 mlflow.log_metric(f"{key}", v, step=epoch_idx)

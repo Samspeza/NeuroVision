@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Estilos Globais ===== */
 html,
 body {
   @apply bg-gray-50 text-gray-800 font-sans;
@@ -17,9 +16,8 @@ textarea {
   @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary;
 }
 
-/* ===== Tema Personalizado ===== */
 :root {
-  --color-primary: #2563eb; /* Azul */
+  --color-primary: #2563eb;
   --color-surface: #ffffff;
 }
 
