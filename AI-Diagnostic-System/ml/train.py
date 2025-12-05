@@ -181,7 +181,6 @@ def treinar(args):
         )
         print("Fase 1 de Treinamento concluída (Fine-tuning apenas do Head).")
 
-        # Log de métricas de histórico por época (ex.: accuracy/val_accuracy)
         for key, values in history.history.items():
             for epoch_idx, v in enumerate(values):
                 mlflow.log_metric(f"{key}", v, step=epoch_idx)
@@ -192,8 +191,7 @@ def treinar(args):
 
         y_pred_probs = model.predict(X_test)
         y_pred = np.argmax(y_pred_probs, axis=1)
-        
-        # Log do relatório JSON e Matriz de Confusão (JSON e Imagem)
+
         report = classification_report(y_test_enc, y_pred, target_names=label_names, output_dict=True)
         mlflow.log_dict(report, "classification_report.json")
         mlflow.log_text(json.dumps(label_names.tolist()), "label_classes.json")
@@ -204,7 +202,6 @@ def treinar(args):
         final_model_dir.mkdir(parents=True, exist_ok=True)
         model_save_path = final_model_dir / "saved_model"
         
-        # Carrega os pesos do melhor checkpoint antes de salvar o modelo final
         try:
             model = models.load_model(str(checkpoint_path)) 
             print(f"Carregado o melhor modelo do checkpoint: {checkpoint_path}")
@@ -227,7 +224,6 @@ def treinar(args):
             "test_accuracy": float(test_acc),
             "test_loss": float(test_loss),
         }
-
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Treinar modelo de diagnóstico de íris com MLflow.")
