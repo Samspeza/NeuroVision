@@ -34,13 +34,10 @@ DEFAULT_EPOCHS = 50 # Aumentado
 BATCH_SIZE = 32
 IMG_SHAPE = (224, 224, 3)
 RANDOM_SEED = 42
-LEARNING_RATE = 1e-4 # Taxa de aprendizado mais baixa para Transfer Learning
+LEARNING_RATE = 1e-4 
 
 tf.random.set_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
-
-
-# --- Funções de Preparação de Dados (Mantidas) ---
 
 def carregar_dataset(npz_path: Path):
     # ... (Função idêntica à original)
