@@ -1,11 +1,3 @@
-# ml/train.py - Versão SUPER FODA com Transfer Learning e Augmentation
-"""
-Treinamento de modelo robusto para diagnóstico iridológico (íris) usando Transfer Learning.
-- Carrega dataset pré-processado.
-- Utiliza uma rede pré-treinada (MobileNetV3Large) como base (Transfer Learning).
-- Implementa Aumento de Dados (Data Augmentation) para maior robustez.
-- Rastreia parâmetros, métricas, figuras de treinamento e o modelo com MLflow.
-"""
 
 import os
 import sys
@@ -19,7 +11,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, models, callbacks # type: ignore
-from tensorflow.keras.applications import MobileNetV3Large # type: ignore # ⚡️ Nova Base
+from tensorflow.keras.applications import MobileNetV3Large # type: ignore 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, confusion_matrix
 import mlflow
@@ -40,7 +32,6 @@ tf.random.set_seed(RANDOM_SEED)
 np.random.seed(RANDOM_SEED)
 
 def carregar_dataset(npz_path: Path):
-    # ... (Função idêntica à original)
     if not npz_path.exists():
         raise FileNotFoundError(f"Arquivo de dataset não encontrado: {npz_path}")
     data = np.load(npz_path, allow_pickle=True)
@@ -54,7 +45,6 @@ def carregar_dataset(npz_path: Path):
 
 
 def codificar_labels(y_train, y_val, y_test):
-    # ... (Função idêntica à original)
     le = LabelEncoder()
     le.fit(y_train)
     y_train_enc = le.transform(y_train)
