@@ -17,8 +17,6 @@ from sklearn.metrics import classification_report, confusion_matrix
 import mlflow
 import mlflow.keras
 
-
-# --- Configurações Globais ---
 ROOT = Path(__file__).resolve().parents[1]
 PROCESSED_PATH = ROOT / "data" / "processed" / "dataset_prepared.npz"
 MODELS_DIR = ROOT / "models"
@@ -52,9 +50,6 @@ def codificar_labels(y_train, y_val, y_test):
     y_test_enc = le.transform(y_test)
     num_classes = len(le.classes_)
     return y_train_enc, y_val_enc, y_test_enc, num_classes, le
-
-
-
 
 def construir_modelo_avancado(input_shape, num_classes, base_model_trainable=False):
     data_augmentation = keras.Sequential([
@@ -91,7 +86,6 @@ def construir_modelo_avancado(input_shape, num_classes, base_model_trainable=Fal
     return model
 
 def log_confusion_matrix_plot(y_true_enc, y_pred, label_names):
-    """Gera e loga um plot da Matriz de Confusão."""
     fig, ax = plt.subplots(figsize=(10, 10))
     cm = confusion_matrix(y_true_enc, y_pred)
     im = ax.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
@@ -139,11 +133,9 @@ def treinar(args):
         mlflow.log_param("num_classes", num_classes)
         mlflow.log_param("model_name", "iris_cnn")
 
-        # Construir modelo
         model = construir_modelo(IMG_SHAPE, num_classes)
         model.summary(print_fn=lambda s: mlflow.log_text(s + "\\n", "model_summary.txt"))
 
-        # Callbacks
         early_stop = callbacks.EarlyStopping(monitor="val_loss", patience=6, restore_best_weights=True)
         reduce_lr = callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=3)
         timestamp = int(time.time())
