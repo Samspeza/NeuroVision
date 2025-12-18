@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers, models, callbacks # type: ignore
-from tensorflow.keras.applications import MobileNetV3Large # type: ignore 
+from tensorflow.keras import layers, models, callbacks 
+from tensorflow.keras.applications import MobileNetV3Large 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, confusion_matrix
 import mlflow
@@ -20,7 +20,7 @@ import mlflow.keras
 ROOT = Path(__file__).resolve().parents[1]
 PROCESSED_PATH = ROOT / "data" / "processed" / "dataset_prepared.npz"
 MODELS_DIR = ROOT / "models"
-DEFAULT_EPOCHS = 50 # Aumentado
+DEFAULT_EPOCHS = 50 
 BATCH_SIZE = 32
 IMG_SHAPE = (224, 224, 3)
 RANDOM_SEED = 42
