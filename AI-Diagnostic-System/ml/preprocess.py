@@ -1,13 +1,4 @@
-# ml/preprocess.py
-"""
-Pré-processamento de imagens de íris para diagnósticos iridológicos.
-Etapas:
-- Carregamento das imagens brutas em data/raw/
-- Segmentação circular para isolar a íris
-- Remoção de reflexos e normalização
-- Redimensionamento para entrada da rede neural
-- Divisão em conjuntos de treino, validação e teste
-"""
+
 
 import os
 import cv2
@@ -20,7 +11,6 @@ PROCESSED_DIR = "data/processed"
 IMG_SIZE = (224, 224)
 
 def segmentar_iris(imagem):
-    """Isola a região da íris por detecção de círculos de borda."""
     gray = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
     gray = cv2.medianBlur(gray, 5)
     circles = cv2.HoughCircles(
@@ -44,14 +34,12 @@ def segmentar_iris(imagem):
     return imagem
 
 def remover_reflexos(imagem):
-    """Reduz reflexos especulares através de threshold adaptativo e inpainting."""
     gray = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
     mask = cv2.threshold(gray, 240, 255, cv2.THRESH_BINARY)[1]
     inpainted = cv2.inpaint(imagem, mask, 5, cv2.INPAINT_TELEA)
     return inpainted
 
 def preprocessar_imagem(path):
-    """Aplica o pipeline completo a uma imagem individual."""
     imagem = cv2.imread(path)
     if imagem is None:
         raise ValueError(f"Não foi possível carregar {path}")
@@ -63,7 +51,6 @@ def preprocessar_imagem(path):
     return imagem
 
 def carregar_dataset():
-    """Carrega todas as imagens do diretório raw e gera os splits."""
     imagens, labels = [], []
 
     for classe in os.listdir(RAW_DIR):
