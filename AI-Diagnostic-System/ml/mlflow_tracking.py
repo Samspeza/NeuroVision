@@ -1,60 +1,126 @@
 import os
-import mlflow
+import logging
+import importlib
 from contextlib import contextmanager
+from typing import Optional, Any, Generator
+
+import mlflow
+
+# Configuração básica de logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logger = logging.getLogger(__name__)
 
 DEFAULT_EXPERIMENT = os.getenv("MLFLOW_EXPERIMENT", "default_experiment")
 MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
 
 
-def init_mlflow(tracking_uri: str = None, experiment_name: str = None):
+def _check_module(module_name: str) -> bool:
+    """Verifica se um módulo está disponível para import."""
+    return importlib.util.find_spec(module_name) is not None
+
+
+def init_mlflow(
+    tracking_uri: Optional[str] = None,
+    experiment_name: Optional[str] = None
+) -> str:
+    """
+    Inicializa o MLflow e define o experimento ativo.
+    Retorna o experiment_id configurado.
+    """
     uri = tracking_uri or MLFLOW_TRACKING_URI
-    mlflow.set_tracking_uri(uri)
     exp_name = experiment_name or DEFAULT_EXPERIMENT
+
+    mlflow.set_tracking_uri(uri)
+
     try:
-        exp = mlflow.get_experiment_by_name(exp_name)
-        if exp is None:
-            exp_id = mlflow.create_experiment(exp_name)
+        existing_exp = mlflow.get_experiment_by_name(exp_name)
+
+        if existing_exp is None:
+            experiment_id = mlflow.create_experiment(exp_name)
+            logger.info(f"Experimento '{exp_name}' criado (id={experiment_id})")
         else:
-            exp_id = exp.experiment_id
+            experiment_id = existing_exp.experiment_id
+            logger.info(f"Experimento '{exp_name}' carregado (id={experiment_id})")
+
         mlflow.set_experiment(exp_name)
-        print(f"MLflow configurado. URI={uri} | experiment={exp_name} (id={exp_id})")
-        return exp_id
+        logger.info(f"MLflow configurado. URI={uri} | experiment={exp_name}")
+        return experiment_id
+
     except Exception as e:
-        print(f"Falha ao inicializar MLflow: {e}")
-        raise
+        logger.error(f"Falha ao inicializar MLflow: {e}", exc_info=True)
+        raise RuntimeError("Erro crítico ao configurar MLflow") from e
 
 
 @contextmanager
-def mlflow_run(run_name: str = None, experiment_name: str = None, nested: bool = False):
-    if experiment_name:
-        init_mlflow(experiment_name=experiment_name)
-    else:
-        init_mlflow()
+def mlflow_run(
+    run_name: Optional[str] = None,
+    experiment_name: Optional[str] = None,
+    nested: bool = False
+) -> Generator[Any, None, None]:
+    """
+    Context manager para iniciar uma run do MLflow.
+    Pode ser nested e opcionalmente inicializar outro experimento.
+    """
+    init_mlflow(experiment_name=experiment_name) if experiment_name else init_mlflow()
 
     try:
-        with mlflow.start_run(run_name=run_name, nested=nested) as run:
-            yield run
-    except Exception:
-        raise
+        run = mlflow.start_run(run_name=run_name, nested=nested)
+        logger.info(f"Run iniciada: {run.info.run_id} | nested={nested}")
+        yield run
+        mlflow.end_run()
+        logger.info(f"Run finalizada: {run.info.run_id}")
 
-
-def log_model(model, artifact_path: str = "model", registered_model_name: str = None):
-    try:
-        mlflow.keras.log_model(keras_model=model, artifact_path=artifact_path,
-                               registered_model_name=registered_model_name)
-        print(f"Modelo logado no MLflow em artifact_path={artifact_path}")
     except Exception as e:
-        print(f"Falha ao logar modelo no MLflow: {e}")
-        raise
+        logger.error(f"Erro dentro da run MLflow: {e}", exc_info=True)
+        mlflow.end_run(status="FAILED")
+        raise RuntimeError("A run do MLflow falhou") from e
 
 
-def log_artifact(local_path: str, artifact_path: str = None):
+def log_model(
+    model: Any,
+    artifact_path: str = "model",
+    registered_model_name: Optional[str] = None
+) -> str:
+    """
+    Loga um modelo Keras no MLflow.
+    Retorna o caminho do artefato salvo.
+    """
+    if not _check_module("keras"):
+        raise ImportError("Keras não está instalado no ambiente")
+
+    if not hasattr(mlflow, "keras"):
+        raise ImportError("mlflow.keras não está disponível. Instale MLflow com suporte Keras.")
+
     try:
-        if artifact_path:
-            mlflow.log_artifact(local_path, artifact_path=artifact_path)
-        else:
-            mlflow.log_artifact(local_path)
-        print(f"Artefato '{local_path}' logado no MLflow.")
+        model_uri = mlflow.keras.log_model(
+            keras_model=model,
+            artifact_path=artifact_path,
+            registered_model_name=registered_model_name
+        )
+        logger.info(f"Modelo logado em artifact_path='{artifact_path}'")
+        return model_uri
+
     except Exception as e:
-        print(f"Falha ao logar artefato: {e}")
-        raise
+        logger.error(f"Falha ao logar modelo no MLflow: {e}", exc_info=True)
+        raise RuntimeError("Erro ao registrar o modelo no MLflow") from e
+
+
+def log_artifact(
+    local_path: str,
+    artifact_path: Optional[str] = None
+) -> str:
+    """
+    Loga um artefato no MLflow.
+    Retorna o caminho do artefato salvo na run.
+    """
+    if not os.path.exists(local_path):
+        raise FileNotFoundError(f"Arquivo '{local_path}' não encontrado")
+
+    try:
+        mlflow.log_artifact(local_path, artifact_path=artifact_path) if artifact_path else mlflow.log_artifact(local_path)
+        logger.info(f"Artefato '{local_path}' logado com sucesso")
+        return os.path.join(artifact_path or "", os.path.basename(local_path))
+
+    except Exception as e:
+        logger.error(f"Falha ao logar artefato: {e}", exc_info=True)
+        raise RuntimeError("Erro ao registrar artefato no MLflow") from e
