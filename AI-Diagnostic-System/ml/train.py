@@ -10,8 +10,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras import layers, models, callbacks 
-from tensorflow.keras.applications import MobileNetV3Large 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, confusion_matrix
 import mlflow
