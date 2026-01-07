@@ -109,10 +109,7 @@ def log_artifact(
     local_path: str,
     artifact_path: Optional[str] = None
 ) -> str:
-    """
-    Loga um artefato no MLflow.
-    Retorna o caminho do artefato salvo na run.
-    """
+
     if not os.path.exists(local_path):
         raise FileNotFoundError(f"Arquivo '{local_path}' não encontrado")
 
