@@ -6,18 +6,12 @@ import { predictIris } from "../controllers/irisController";
 
 const router = Router();
 
-/**
- * Diretório de upload
- */
 const uploadDir = path.resolve(__dirname, "../../uploads");
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-/**
- * Configuração do storage do multer
- */
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {
     cb(null, uploadDir);
@@ -31,9 +25,7 @@ const storage = multer.diskStorage({
   },
 });
 
-/**
- * Filtro para aceitar apenas imagens
- */
+
 const fileFilter: multer.Options["fileFilter"] = (
   _req,
   file,
@@ -53,10 +45,7 @@ const upload = multer({
   fileFilter,
 });
 
-/**
- * POST /upload
- * Upload de imagem e predição da íris
- */
+
 router.post(
   "/upload",
   upload.single("image"),
