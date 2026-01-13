@@ -3,10 +3,6 @@ import { listarAnalises, buscarAnalisePorId } from "../services/irisService";
 
 const router = Router();
 
-/**
- * GET /api/analises
- * Retorna a lista de todas as análises de íris realizadas
- */
 router.get("/", async (_, res) => {
   try {
     const analises = await listarAnalises();
@@ -17,10 +13,6 @@ router.get("/", async (_, res) => {
   }
 });
 
-/**
- * GET /api/analises/:id
- * Retorna uma análise específica pelo ID
- */
 router.get("/:id", async (req, res) => {
   try {
     const id = parseInt(req.params.id);
