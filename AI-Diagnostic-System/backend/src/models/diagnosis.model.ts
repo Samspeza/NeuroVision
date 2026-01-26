@@ -1,4 +1,4 @@
-import { prisma } from "../utils/prisma";
+import prisma from "../utils/prisma";
 
 export interface DiagnosisCreateDTO {
   imageId: string;
@@ -9,9 +9,7 @@ export interface DiagnosisCreateDTO {
 
 export const DiagnosisModel = {
   async create(data: DiagnosisCreateDTO) {
-    return prisma.diagnosis.create({
-      data,
-    });
+    return prisma.diagnosis.create({ data });
   },
 
   async findById(id: string) {

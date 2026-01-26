@@ -14,26 +14,47 @@ model Image {
   mimetype  String
   size      Int
   createdAt DateTime @default(now())
+
+  diagnoses Diagnosis[]
+}
+
+model Log {
+  id        String   @id @default(uuid())
+  level     String
+  message   String
+  metadata  String?
+  createdAt DateTime @default(now())
+}
+
+model Diagnosis {
+  id           String   @id @default(uuid())
+  imageId      String
+  prediction   String
+  confidence   Float
+  modelVersion String
+  createdAt    DateTime @default(now())
+
+  image Image @relation(fields: [imageId], references: [id])
 }
 
 model AnaliseIris {
-  id             Int       @id @default(autoincrement())
-  nomeArquivo    String
-  caminhoImagem  String
-  resultado      String
-  probabilidade  Float
-  distribuicao   Json
-  criadoEm       DateTime  @default(now())
-  atualizadoEm   DateTime  @updatedAt
-  usuario        Usuario?  @relation(fields: [usuarioId], references: [id])
-  usuarioId      Int?
+  id            Int      @id @default(autoincrement())
+  nomeArquivo   String
+  caminhoImagem String
+  resultado     String
+  probabilidade Float
+  distribuicao  Json
+  criadoEm      DateTime @default(now())
+  atualizadoEm  DateTime @updatedAt
+  usuario       Usuario? @relation(fields: [usuarioId], references: [id])
+  usuarioId     Int?
 }
 
 model Usuario {
-  id          Int           @id @default(autoincrement())
-  nome        String
-  email       String        @unique
-  senhaHash   String
-  criadoEm    DateTime      @default(now())
-  analises    AnaliseIris[]
+  id        Int           @id @default(autoincrement())
+  nome      String
+  email     String        @unique
+  senhaHash String
+  criadoEm  DateTime      @default(now())
+  analises  AnaliseIris[]
 }
