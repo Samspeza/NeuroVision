@@ -1,5 +1,5 @@
-// backend/src/models/image.model.ts
-import prisma from "@/utils/prisma";
+import prisma from "@utils/prisma";
+
 
 export interface ImageCreateDTO {
   filename: string;
