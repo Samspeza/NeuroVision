@@ -1,4 +1,5 @@
-import { prisma } from "../utils/prisma";
+// backend/src/models/image.model.ts
+import prisma from "@/utils/prisma";
 
 export interface ImageCreateDTO {
   filename: string;
@@ -9,9 +10,7 @@ export interface ImageCreateDTO {
 
 export const ImageModel = {
   async create(data: ImageCreateDTO) {
-    return prisma.image.create({
-      data,
-    });
+    return prisma.image.create({ data });
   },
 
   async findById(id: string) {
@@ -24,5 +23,5 @@ export const ImageModel = {
     return prisma.image.findMany({
       orderBy: { createdAt: "desc" },
     });
-  }
+  },
 };
