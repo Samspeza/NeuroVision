@@ -1,10 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { logger } from "../utils/logger";
 
-/**
- * Middleware global de tratamento de erros
- * Captura exceções e envia respostas padronizadas
- */
+
 export function errorHandler(
   err: any,
   req: Request,

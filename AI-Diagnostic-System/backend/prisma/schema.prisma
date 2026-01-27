@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL="postgresql://postgres:postgres@localhost:5432/neurovision")
 }
 
 model Image {
@@ -44,6 +44,7 @@ model AnaliseIris {
   resultado     String
   probabilidade Float
   distribuicao  Json
+  ativo         Boolean  @default(true) 
   criadoEm      DateTime @default(now())
   atualizadoEm  DateTime @updatedAt
   usuario       Usuario? @relation(fields: [usuarioId], references: [id])

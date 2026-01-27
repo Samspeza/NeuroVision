@@ -2,10 +2,6 @@ import { PrismaClient, Prisma } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-/* =======================
- * TIPOS E INTERFACES
- * ======================= */
-
 export interface CriarAnaliseIrisDTO {
   nomeArquivo: string;
   caminhoImagem: string;
@@ -28,20 +24,12 @@ export interface Paginacao {
   limite?: number;
 }
 
-/* =======================
- * ERROS CUSTOMIZADOS
- * ======================= */
-
 class AnaliseIrisError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "AnaliseIrisError";
   }
 }
-
-/* =======================
- * UTILITÁRIOS
- * ======================= */
 
 function validarProbabilidade(valor: number) {
   if (valor < 0 || valor > 1) {
@@ -74,10 +62,6 @@ function logErro(contexto: string, erro: unknown) {
     timestamp: new Date().toISOString(),
   });
 }
-
-/* =======================
- * CRIAÇÃO
- * ======================= */
 
 export async function salvarAnaliseIris(
   dados: CriarAnaliseIrisDTO
@@ -114,10 +98,6 @@ export async function salvarAnaliseIris(
       : new AnaliseIrisError("Falha ao salvar análise de íris.");
   }
 }
-
-/* =======================
- * LISTAGEM COM FILTROS
- * ======================= */
 
 export async function listarAnalises(
   filtros: FiltroAnaliseIris = {},
@@ -165,10 +145,6 @@ export async function listarAnalises(
   }
 }
 
-/* =======================
- * BUSCA POR ID
- * ======================= */
-
 export async function buscarAnalisePorId(id: number) {
   try {
     const analise = await prisma.analiseIris.findFirst({
@@ -189,10 +165,6 @@ export async function buscarAnalisePorId(id: number) {
   }
 }
 
-/* =======================
- * SOFT DELETE
- * ======================= */
-
 export async function removerAnalise(id: number) {
   try {
     return await prisma.analiseIris.update({
@@ -204,10 +176,6 @@ export async function removerAnalise(id: number) {
     throw new AnaliseIrisError("Erro ao remover análise.");
   }
 }
-
-/* =======================
- * ESTATÍSTICAS
- * ======================= */
 
 export async function obterEstatisticasGerais() {
   try {
