@@ -1,21 +1,34 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { uploadIrisImage } from "../services/api";
+
+interface PredictionResult {
+  classification?: string;
+  confidence: number;
+}
 
 const Home: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<PredictionResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
-      setResult(null);
-      setError(null);
-    }
+  const resetFeedback = () => {
+    setResult(null);
+    setError(null);
   };
 
-  const handleUpload = async () => {
+  const handleFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const selectedFile = e.target.files?.[0];
+      if (!selectedFile) return;
+
+      setFile(selectedFile);
+      resetFeedback();
+    },
+    []
+  );
+
+  const handleUpload = useCallback(async () => {
     if (!file) {
       setError("Selecione uma imagem para enviar.");
       return;
@@ -23,6 +36,8 @@ const Home: React.FC = () => {
 
     try {
       setLoading(true);
+      resetFeedback();
+
       const response = await uploadIrisImage(file);
       setResult(response.prediction);
     } catch (err) {
@@ -31,10 +46,10 @@ const Home: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [file]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="bg-surface shadow-soft rounded-2xl p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-primary mb-4 text-center">
           Diagnóstico Iridológico Automatizado
@@ -64,9 +79,12 @@ const Home: React.FC = () => {
             <h2 className="font-semibold text-lg text-primary mb-2">
               Resultado do Diagnóstico
             </h2>
+
             <p className="text-gray-700 mb-2">
-              <strong>Classificação:</strong> {result.classification || "—"}
+              <strong>Classificação:</strong>{" "}
+              {result.classification || "—"}
             </p>
+
             <p className="text-gray-700">
               <strong>Probabilidade:</strong>{" "}
               {(result.confidence * 100).toFixed(2)}%
