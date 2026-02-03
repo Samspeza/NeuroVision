@@ -33,6 +33,7 @@ model Diagnosis {
   confidence   Float
   modelVersion String
   createdAt    DateTime @default(now())
+  deletedAt    DateTime? 
 
   image Image @relation(fields: [imageId], references: [id])
 }
