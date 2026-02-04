@@ -3,10 +3,6 @@ import fs from "fs";
 import path from "path";
 import sharp from "sharp";
 
-/* =====================================================
- * Tipagens e Interfaces
- * ===================================================== */
-
 export interface ModelConfig {
   inputSize: number;
   normalize: boolean;
